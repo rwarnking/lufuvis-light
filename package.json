@@ -1,0 +1,24 @@
+{
+  "name": "lung-function-vis-vite",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vueuse/core": "^10.1.2",
+    "axios": "^1.4.0",
+    "cash-dom": "^8.1.5",
+    "d3": "^7.8.5",
+    "pinia": "^2.1.3",
+    "uuid": "^9.0.0",
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.1.0",
+    "vite": "^4.3.9"
+  }
+}
