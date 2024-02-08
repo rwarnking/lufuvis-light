@@ -47,6 +47,9 @@ function AddAreas(svg, areas, xScale, yScale) {
 }
 
 function AddTooltip(rect, text="Dummy Text!") {
+    // TODO: hard coded check values
+    const x = rect.x + 15 + 100 < window.innerWidth ? rect.x + 15 : rect.x - 15 - 100;
+    const y = rect.y + 75 < window.innerHeight ? rect.y : rect.y - 75;
     d3.select(".detail-chart")
         .append("div")
         .classed("svg-tooltip", true)
@@ -54,8 +57,8 @@ function AddTooltip(rect, text="Dummy Text!") {
         // .style("visibility", "hidden")
         .html(text)
         // .style("visibility", "visible")
-        .style("left", rect.x + 15 +"px")
-        .style("top", rect.y + "px")
+        .style("left", x +"px")
+        .style("top", y + "px")
         // .style("top", xScale(x(d)) + 10.0 +"px")
         // .style("left", yScale(y(d)) + "px")
         // .style("position", "absolute")

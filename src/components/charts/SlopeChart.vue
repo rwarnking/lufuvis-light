@@ -143,10 +143,10 @@
                 // Add Areas //
                 ///////////////
                 const colors = {
-                    "high": "red",
-                    "medium": "orangered",
-                    "low": "orange",
-                    "normal": "green",
+                    "high": "#e63e41",
+                    "medium": "#e89748",
+                    "low": "#e3e376",
+                    "normal": "#1a9641",
                 }
 
                 let res = props.areas;
@@ -160,7 +160,7 @@
                     .attr("y", d => yScale(toPercentage(d.end)))
                     .attr("width", size)
                     .attr("height", d => yScale(toPercentage(d.start))-yScale(toPercentage(d.end)))
-                    .attr('fill-opacity', 0.2)
+                    .attr('fill-opacity', 0.33)
                     .attr("fill", d => colors[d.name])
 
                 // AddAreas(svg, areas, xScale, yScale);
@@ -226,11 +226,11 @@
                 ///////////////////
                 const colorScale = d3.scaleThreshold()
                     .domain(props.areas.map(d => toPercentage(d.end)))
-                    .range(props.areas.map(d => colors[d.name]).concat(["black"]));
+                    .range(props.areas.map(d => colors[d.name]));
 
                 const interpretationScale = d3.scaleThreshold()
                     .domain(props.areas.map(d => toPercentage(d.end)))
-                    .range(props.areas.map(d => d.name).concat(["none"]));
+                    .range(props.areas.map(d => d.name));
 
                 const datadots = g.append("g")
                     .classed("zoomable", true)

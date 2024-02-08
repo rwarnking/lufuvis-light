@@ -20,7 +20,8 @@
         <div>
             <b>Select Patient<br></b>
             <select name="attributes" id="attributes">
-                <option value="none">TODO</option>
+                <!-- TODO -->
+                <option value="none">P0-A</option>
             </select>
         </div>
         <span class="divider"></span>
@@ -36,12 +37,12 @@
         <span class="divider"></span>
         <div>
             <b>Height<br></b>
-            <b id="height">{{patient.height}}</b>
+            <b id="height">{{patient.height}} m</b>
         </div>
         <span class="divider"></span>
         <div>
             <b>Weight<br></b>
-            <b id="weight">{{patient.weight}}</b>
+            <b id="weight">{{patient.weight}} kg</b>
         </div>
     </nav>
 </template>

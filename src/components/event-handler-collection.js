@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import {AddTooltip} from "./component-collection";
 
-function handleMouseOver(event, d, scale) {
+function handleMouseOver(event, d, scale, useAbs=true) {
     // Use D3 to select element, change color and size
     // d3.select(this)
     //     .attr("fill", "orange")
@@ -19,7 +19,7 @@ function handleMouseOver(event, d, scale) {
         "Normalised: " + printNorm + "%" + "<br>" +
         "Absolute: " + printAbs + "<br>" +
         "Recommended: " + recommendation + "<br>" +
-        "Interpretation: " + scale(printNorm)
+        "Interpretation: " + scale(useAbs ? printAbs : printNorm)
     );
 }
 

@@ -11,7 +11,7 @@ This is a visualization for presenting lung function data. You can inspect the r
 ## Table of Contents
 - [Lung function visualization](#lung-function-visualization)
   - [Table of Contents](#table-of-contents)
-  - [List of Features](#list-of-Features)
+  - [List of Features](#list-of-features)
   - [Installation](#installation)
     - [Dependencies](#dependencies)
   - [Usage](#usage)
@@ -68,8 +68,8 @@ python server.py
 ``` -->
 
 For the website:
-1. Run `npm run serve` in the console
-2. The application should run at [http://localhost:8081](http://localhost:8081)
+1. Run `npm run dev` in the console
+2. The application should run at [http://127.0.0.1:3000/lufuvis-light/](http://127.0.0.1:3000/lufuvis-light/)
 
 ### GUI
 
@@ -91,7 +91,6 @@ TODO
 - improve panning and zooming
 - decide whether y-scale should start with 0 or should be cropped
 - increase right border
-  - change tooltip location, when close to border
 - allow for missing data
   - add support for only post data
   - add support for exams where certain measurements are missing

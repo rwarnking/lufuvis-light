@@ -4,13 +4,13 @@
     <main>
         <SmallMultiples :width="size.width*0.2" :height="Math.max(size.height-90,0)"/>
         <div class="main-info">
-            <TimeMaster :width="size.width*0.8"/>
-            <DetailsCollectionLineOnly v-if="selectedLayout === 1" :width="size.width*0.8"/>
-            <DetailsCollectionCandle v-else-if="selectedLayout === 2" :width="size.width*0.8"/>
-            <DetailsCollectionArrows v-else-if="selectedLayout === 3" :width="size.width*0.8"/>
-            <DetailsCollectionTraingles v-else-if="selectedLayout === 4" :width="size.width*0.8"/>
-            <DetailsCollectionOvals v-else-if="selectedLayout === 5" :width="size.width*0.8"/>
-            <DetailsCollection v-else :width="size.width*0.8"/>
+            <TimeMaster :width="size.width*0.75"/>
+            <DetailsCollectionLineOnly v-if="selectedLayout === 1" :width="size.width*0.75"/>
+            <DetailsCollectionCandle v-else-if="selectedLayout === 2" :width="size.width*0.75"/>
+            <DetailsCollectionArrows v-else-if="selectedLayout === 3" :width="size.width*0.75"/>
+            <DetailsCollectionTraingles v-else-if="selectedLayout === 4" :width="size.width*0.75"/>
+            <DetailsCollectionOvals v-else-if="selectedLayout === 5" :width="size.width*0.75"/>
+            <DetailsCollection v-else :width="size.width*0.75"/>
         </div>
     </main>
 </template>
@@ -46,7 +46,9 @@ main {
 }
 
 .main-info {
-    width: 80%;
+    width: 75%;
+    padding-left: 1em;
+    padding-right: 1.5em;
 }
 
 </style>

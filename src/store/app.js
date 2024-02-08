@@ -77,6 +77,13 @@ export const useApp = defineStore('app', {
             this.zoomEndTime = Date.now();
         },
 
+        areDetailsVisible(id) {
+            const value = this.detailsVisible.get(id)
+            if (value !== undefined) {
+                return value
+            }
+            return false
+        },
         setDetailsVisible(id) {
             this.detailsVisible.set(id, true)
         },
