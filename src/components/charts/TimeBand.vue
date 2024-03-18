@@ -258,7 +258,8 @@
                         )
                     ))
                     .attr("height", rectHeight)
-                    .attr("fill", d => monthColor(d.end.getMonth()))
+                    // .attr("fill", d => monthColor(d.end.getMonth()))
+                    .attr("fill", d => "white")
                     .attr("stroke", "black")
                     .attr("stroke-width", 1)
 

@@ -3,7 +3,7 @@
 <!-- [<img alt="Unit tests" src="https://img.shields.io/github/actions/workflow/status/rwarnking/lufuvis-light/pytests.yml?label=Tests&logo=github&style=for-the-badge" height="23">](https://github.com/rwarnking/lufuvis-light/actions/workflows/pytests.yml) -->
 [<img alt="Linting status of master" src="https://img.shields.io/github/actions/workflow/status/rwarnking/lufuvis-light/linter.yml?label=Linter&style=for-the-badge" height="23">](https://github.com/marketplace/actions/super-linter)
 <!-- [<img alt="Version" src="https://img.shields.io/github/v/release/rwarnking/lufuvis-light?style=for-the-badge" height="23">](https://github.com/rwarnking/lufuvis-light/releases/latest) -->
-<!-- [<img alt="Licence" src="https://img.shields.io/github/license/rwarnking/lufuvis-light?style=for-the-badge" height="23">](https://github.com/rwarnking/lufuvis-light/blob/main/LICENSE) -->
+[<img alt="Licence" src="https://img.shields.io/github/license/rwarnking/lufuvis-light?style=for-the-badge" height="23">](https://github.com/rwarnking/lufuvis-light/blob/main/LICENSE)
 
 ## Description
 This is a visualization for presenting lung function data. You can inspect the result via [Github pages](https://rwarnking.github.io/lufuvis-light/).
@@ -15,7 +15,8 @@ This is a visualization for presenting lung function data. You can inspect the r
   - [Installation](#installation)
     - [Dependencies](#dependencies)
   - [Usage](#usage)
-    - [GUI](#gui)
+    - [Start](#start)
+    - [Example](#example)
   - [Contributing](#contributing)
   - [Credits](#credits)
   - [License](#license)
@@ -48,7 +49,7 @@ conda env create --file lufuvis.txt
 ```
 afterwards activate the environment (`conda activate lufuvis`) and start the application. -->
 
-The main dependency is the anvil tool found here:
+The main dependency can be found here:
 <!-- * [flask](https://pypi.org/project/Flask/) for the flask server -->
 * ...
 
@@ -71,9 +72,12 @@ For the website:
 1. Run `npm run dev` in the console
 2. The application should run at [http://127.0.0.1:3000/lufuvis-light/](http://127.0.0.1:3000/lufuvis-light/)
 
-### GUI
+### Example
 
-TODO
+This visualization displays lung function data across multiple exams of an selectable patient. For each exam various measurements are shown and can be compared. The GUI allows the user to pan and zoom the different line charts
+as well as hiding unneeded information. Furthermore it is possible to reorder components for easy comparrison.
+
+![VIS](/docs/images/lufuvis_improved.jpg)
 
 ## Contributing
 
@@ -83,7 +87,7 @@ TODO
 TODO
 
 ## License
-TODO
+This project is licensed under the [MIT License](LICENSE).
 
 ## TODOs
 
