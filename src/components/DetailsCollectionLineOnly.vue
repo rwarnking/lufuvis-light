@@ -10,6 +10,7 @@
                 :key="item.id"
                 :x="item.x"
                 :y="item.y"
+                :xScale="scales.x"
                 :yDomain="item.data.ydomain"
                 :yLabel="item.data.display"
                 :yLabelShort="item.data.display_short"
@@ -25,6 +26,7 @@
 
 <!-- Code behind -->
 <script>
+    import * as d3 from 'd3';
     import LineChart from "./charts/LineChart";
     import axios from "axios";
     import { useApp } from "@/store/app";
@@ -44,14 +46,15 @@
         },
 
         // Initialises a new instance.
-        setup() {
+        setup(props) {
             // Get access to parts that we need in our properties and functions.
             const bnl = useApp();
 
-            const measures = reactive([]);
-            const selMeasures = computed(() => {
-                return measures.filter(d => bnl.selectedViews[d.id]);
-            })
+            const measures = reactive({ data: []});
+            const selMeasures = computed(() => measures.data.filter(d => bnl.selectedViews[d.id]))
+            const scales = reactive({
+                x: d3.scaleUtc()
+            });
 
             const margins = {
                 top: 0,
@@ -61,31 +64,45 @@
             };
 
             // Initialise the UI once it is realised.
-            onMounted(async () => {
+            async function init() {
                 // get data regarding original distances
-                const dataset = await (await axios.get("data.json")).data
+                const dataset = (await axios.get(`data_${bnl.dataset}.json`)).data
 
+                scales.x
+                    .domain(d3.extent(Object.values(dataset)[0].values, d => new Date(d.date)))
+                    .nice()
+                    .range([
+                        margins.left,
+                        props.width - margins.right
+                    ])
+
+                const results = [];
                 for (const [key, entry] of Object.entries(dataset)) {
-                    measures.push({
+                    results.push({
                         id: key,
                         data: entry,
                         x: d => new Date(d.date),
                         y: d => d.best_val_a,
                     });
                 }
+                measures.data = results;
                 orderUpdate(bnl.viewOrder);
-            });
-
-            function orderUpdate(order) {
-                measures.sort((a, b) => order.findIndex(d => d.id === a.id)-order.findIndex(d => d.id === b.id))
             }
 
+            function orderUpdate(order) {
+                measures.data.sort((a, b) => order.findIndex(d => d.id === a.id)-order.findIndex(d => d.id === b.id))
+            }
+
+            onMounted(init);
+
             watch(() => bnl.viewOrder, orderUpdate, { deep: true });
+            watch(() => bnl.dataset, init);
 
             return {
                 margins,
                 measures,
                 selMeasures,
+                scales
             };
         }
     })

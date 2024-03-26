@@ -5,7 +5,7 @@
         </div>
         <span class="divider"></span>
         <div>
-            <b>Layout </b>
+            <b style="margin: 0 0.5em;">Layout</b>
             <select @change="event => app.setSelectedLayout(Number.parseInt(event.target.value))">
                 <option value=0>Line+Slope</option>
                 <option value=1>Line</option>
@@ -14,14 +14,20 @@
                 <option value=4>Triangles</option>
                 <option value=5>Ovals</option>
             </select>
+            <b style="margin: 0 0.5em;">Data Range</b>
+            <select value="0" @change="event => app.setDataDomain(event.target.value === '1')">
+                <option value=0>0 to Maximum</option>
+                <option value=1>Minimum to Maximum</option>
+            </select>
+
         </div>
     </div>
     <nav>
         <div>
             <b>Select Patient<br></b>
-            <select name="attributes" id="attributes">
-                <!-- TODO -->
-                <option value="none">P0-A</option>
+            <select name="attributes" id="attributes" @change="e => app.setDataset(e.target.value)">
+                <option value="p0_a">P0-A</option>
+                <option value="p1_d">P1-D</option>
             </select>
         </div>
         <span class="divider"></span>

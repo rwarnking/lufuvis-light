@@ -393,6 +393,7 @@
 
             // Watch some of our properties to automatically refresh the
             // D3 diagram.
+            watch(() => props.data, draw);
             watch(() => bnl.highlightedObs, highlight);
             watch(() => bnl.selectedObs, select);
             watch(() => bnl.detailZoom, zoomed, { deep: true });

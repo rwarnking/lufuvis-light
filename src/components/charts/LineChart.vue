@@ -119,8 +119,9 @@
 
         // Compute default domains.
         const xDomain = d3.extent(X);
+        const puffer = (d3.max(Y) - d3.min(Y)) * 0.1
         const yDomain = props.yDomain === undefined ?
-            [0, d3.max(Y)] :
+            [d3.min(Y)-puffer, d3.max(Y)+puffer] :
             [toPercentage(props.yDomain[0]), toPercentage(props.yDomain[1])];
 
         // TODO
@@ -134,15 +135,16 @@
         // Construct scales and axes.
         xScale = props.xScale === null ? props.xType()
             .domain(xDomain)
-            .nice()
             .range(xRange) : props.xScale;
         yScale = props.yType()
             .domain(yDomain)
-            .nice()
             .range(yRange);
 
         const yAxis = d3.axisLeft(yScale)
-            .tickValues(props.areas.map(d => toPercentage(d.start)))
+            .tickValues(props.areas.filter(d =>
+                yScale(toPercentage(d.start)) > yScale.range()[1] &&
+                yScale(toPercentage(d.start)) < yScale.range()[0]
+            ).map(d => toPercentage(d.start)))
 
         //////////////
         // Main svg //
@@ -193,12 +195,6 @@
         ///////////////
         // Add Areas //
         ///////////////
-        const colors = {
-            "high": "#e63e41",
-            "medium": "#e89748",
-            "low": "#e3e376",
-            "normal": "#1a9641",
-        }
 
         let res = props.areas;
         res.sort((a, b) => a.start - b.start)
@@ -221,7 +217,7 @@
                 ), yScale.range()[0] - yScale(toPercentage(d.end)))
             )
             .attr('fill-opacity', 0.33)
-            .attr("fill", d => colors[d.name])
+            .attr("fill", d => d.color)
 
         // AddAreas(svg, areas, xScale, yScale);
 
@@ -262,7 +258,7 @@
         ///////////////////
         const colorScale = d3.scaleThreshold()
             .domain(props.areas.map(d => d.end))
-            .range(props.areas.map(d => colors[d.name]));
+            .range(props.areas.map(d => d.color));
 
         const interpretationScale = d3.scaleThreshold()
             .domain(props.areas.map(d => toPercentage(d.end)))
@@ -406,7 +402,6 @@
     watch(() => bnl.highlightedObs, highlight, { deep: true });
     watch(() => bnl.selectedObs, select, { deep: true });
     watch(() => bnl.detailZoom, zoomed, { deep: true });
-    // watch(() => bnl.brushedClusters, draw);
     watch(props, draw, { deep: true })
 
     // Issue the load request once the component is ready.

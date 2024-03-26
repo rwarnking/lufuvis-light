@@ -18,7 +18,7 @@
                         style="margin-right: 10px;"
                         :fill-opacity="0.33"
                         :data="item.data.areas.map(d => d.name)"
-                        :colors="item.data.areas.map(d => colors[d.name])"
+                        :colors="item.data.areas.map(d => d.color)"
                     />
                     <button class="details-button" @click="bnl.toggleDetailsVisible(item.id)">
                         {{ visible[item.id] ? "hide slope charts" : "show slope charts" }}
@@ -29,11 +29,13 @@
             <SlopeCollection
                 :id="item.id"
                 :data="item.data.values"
+                :time="loadTime"
                 :xScale="scales.x"
                 :width="width"
                 :height="75"
-                :yDomain="item.data.ydomain"
+                :yDomain="useDataDomain ? slopeDomains[item.id] : item.data.ydomain"
                 :areas="item.data.areas"
+                :colors="item.data.areas.map(d => d.color)"
                 :percentage="item.data.percentage"
             />
             
@@ -45,10 +47,11 @@
                 :width="width"
                 :height="125"
                 :xScale="scales.x"
-                :yDomain="item.data.ydomain"
+                :yDomain="useDataDomain ? slopeDomains[item.id] : item.data.ydomain"
                 :yLabel="item.data.display"
                 :yLabelShort="item.data.display_short"
                 :areas="item.data.areas"
+                :colors="item.data.areas.map(d => d.color)"
                 :percentage="item.data.percentage"
             />
         </div>
@@ -63,29 +66,23 @@
     import ColorLegend from './charts/ColorLegend.vue'
     import axios from "axios";
     import { useApp } from "@/store/app";
-    import { onMounted, reactive, computed, watch } from "vue";
+    import { ref, onMounted, reactive, computed, watch } from "vue";
+    import { storeToRefs } from 'pinia';
 
     const props = defineProps({
         width: {
             type: Number,
             default: 800
-        }
+        },
     });
-
-    const colors = {
-        "high": "#e63e41",
-        "medium": "#e89748",
-        "low": "#e3e376",
-        "normal": "#1a9641",
-    }
 
     // Get access to parts that we need in our properties and functions.
     const bnl = useApp();
+    const { useDataDomain } = storeToRefs(bnl);
 
-    const measures = reactive([]);
-    const selMeasures = computed(() => {
-        return measures.filter(d => bnl.selectedViews[d.id]);
-    })
+    const loadTime = ref(Date.now())
+    const measures = reactive({ data: []});
+    const selMeasures = computed(() => measures.data.filter(d => bnl.selectedViews[d.id]))
     const scales = reactive({
         x: d3.scaleUtc()
     });
@@ -102,12 +99,12 @@
         selMeasures.value.forEach(d => obj[d.id] = bnl.areDetailsVisible(d.id));
         return obj;
     });
+    const slopeDomains = reactive({})
 
     // Initialise the UI once it is realised.
-    onMounted(async () => {
+    async function init() {
         // get data regarding original distances
-        const dataset = await (await axios.get("data.json")).data
-
+        const dataset = (await axios.get(`data_${bnl.dataset}.json`)).data
 
         scales.x
             .domain(d3.extent(Object.values(dataset)[0].values, d => new Date(d.date)))
@@ -117,23 +114,37 @@
                 props.width - margins.right
             ])
 
+        const order = [], results = []          
         for (const [key, entry] of Object.entries(dataset)) {
-            measures.push({
+            results.push({
                 id: key,
                 data: entry,
                 x: d => new Date(d.date),
                 y: d => d.best_val_a,
             });
             bnl.setDetailsVisible(key);
-        }
-        orderUpdate(bnl.viewOrder);
-    });
+            order.push({ id: key, index: entry.index })
 
-    function orderUpdate(order) {
-        measures.sort((a, b) => order.findIndex(d => d.id === a.id)-order.findIndex(d => d.id === b.id))
+            const minVal = d3.min(entry.values, d => Math.min(d.post_val_a, d.pre_val_a))
+            const maxVal = d3.max(entry.values, d => Math.max(d.post_val_a, d.pre_val_a))
+            const puffer = (maxVal-minVal) * 0.15;
+            slopeDomains[key] = [minVal - puffer, maxVal + puffer]
+        }
+
+        measures.data = results;
+        order.sort((a, b) => a.index - b.index)
+        bnl.setViewOrder(order)
+        loadTime.value = Date.now();
     }
 
+    function orderUpdate(order) {
+        measures.data.sort((a, b) => order.findIndex(d => d.id === a.id) - order.findIndex(d => d.id === b.id))
+    }
+
+    onMounted(init)
+
     watch(() => bnl.viewOrder, orderUpdate, { deep: true });
+    watch(() => bnl.dataset, init);
 
 </script>
 

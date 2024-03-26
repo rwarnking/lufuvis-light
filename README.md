@@ -93,10 +93,8 @@ This project is licensed under the [MIT License](LICENSE).
 
 - limit overview charts in max height
 - improve panning and zooming
-- decide whether y-scale should start with 0 or should be cropped
 - increase right border
 - allow for missing data
   - add support for only post data
   - add support for exams where certain measurements are missing
-- predefine order of measurements
 - add categories to sort the measurements by

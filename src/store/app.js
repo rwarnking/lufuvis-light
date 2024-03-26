@@ -3,19 +3,29 @@ import { defineStore } from 'pinia'
 
 export const useApp = defineStore('app', {
     state: () => ({
+        dataset: "p0_a",
+        useDataDomain: false,
+
         errors: [],
-            selectedViews: {},
-            viewOrder: [],
-            viewOrderComparison: () => 0,
-            highlightedObs: null,
-            selectedObs: null,
-            selectedLayout: 0,
-            detailZoom: d3.zoomIdentity,
-            detailsVisible: new Map(),
-            zoomEndTime: Date.now(),
+        selectedViews: {},
+        viewOrder: [],
+        viewOrderComparison: () => 0,
+        
+        highlightedObs: null,
+        selectedObs: null,
+        
+        selectedLayout: 0,
+        
+        detailZoom: d3.zoomIdentity,
+        detailsVisible: new Map(),
+        zoomEndTime: Date.now(),
     }),
 
     actions: {
+
+        setDataset(id) {
+            this.dataset = id;
+        },
 
         addError(error) {
             this.errors.push(error);
@@ -93,5 +103,9 @@ export const useApp = defineStore('app', {
                 this.detailsVisible.set(id, !value)
             }
         },
+
+        setDataDomain(value) {
+            this.useDataDomain = value == true;
+        }
     }
 });

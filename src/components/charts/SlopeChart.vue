@@ -63,6 +63,12 @@
                 type: Boolean,
                 default: true
             },
+            time: {
+                type: Number,
+            },
+            simTime: {
+                type: Number,
+            },
         },
 
         setup(props) {
@@ -88,8 +94,8 @@
             // Update the bars in the bar chart.
             function draw() {
                 const theg = d3.select(chart.value);
-                theg.attr("transform", `translate(${props.data.x},${props.offset})`);
                 theg.selectAll('*').remove();
+                theg.attr("transform", `translate(${props.data.x},${props.offset})`);
                 const g = theg.append('g')
 
                 // Compute values.
@@ -108,8 +114,9 @@
                 // Compute default domains.
                 // const xDomain = d3.extent(X);
                 // const xDomain = [0, 1];
+                const puffer = (Math.max(Y1, Y2) - Math.min(Y1, Y2)) * 0.1
                 const yDomain = props.yDomain === undefined ?
-                    [0, Math.max(Y1, Y2)] :
+                    [Math.min(Y1, Y2)-puffer, Math.max(Y1, Y2)+puffer] :
                     [toPercentage(props.yDomain[0]), toPercentage(props.yDomain[1])];
 
                 // TODO
@@ -142,26 +149,25 @@
                 ///////////////
                 // Add Areas //
                 ///////////////
-                const colors = {
-                    "high": "#e63e41",
-                    "medium": "#e89748",
-                    "low": "#e3e376",
-                    "normal": "#1a9641",
-                }
 
                 let res = props.areas;
                 res.sort((a, b) => a.start - b.start)
 
                 g.append("g")
                     .selectAll("rect")
-                    .data(res)
+                    .data(res
+                        .filter(d =>
+                            yScale(toPercentage(d.start)) > yRange[1] &&
+                            yScale(toPercentage(d.end)) < yRange[0]
+                        )
+                    )
                     .join("rect")
                     .attr("x", 0)
-                    .attr("y", d => yScale(toPercentage(d.end)))
+                    .attr("y", d => Math.max(yRange[1], yScale(toPercentage(d.end))))
                     .attr("width", size)
-                    .attr("height", d => yScale(toPercentage(d.start))-yScale(toPercentage(d.end)))
+                    .attr("height", d => Math.min(yRange[0], yScale(toPercentage(d.start)))-Math.max(yRange[1],yScale(toPercentage(d.end))))
                     .attr('fill-opacity', 0.33)
-                    .attr("fill", d => colors[d.name])
+                    .attr("fill", d => d.color)
 
                 // AddAreas(svg, areas, xScale, yScale);
 
@@ -192,11 +198,11 @@
                     .attr("fill", "lightgray")
                     .attr("d", `
                         M${0}
-                        ${yScale(0)}
+                        ${yRange[0]}
                         L${size}
-                        ${yScale(0)}
+                        ${yRange[0]}
                         L${blub}
-                        ${yScale(0) + circleHeight}
+                        ${yRange[0] + circleHeight}
                         Z
                     `)
 
@@ -226,7 +232,7 @@
                 ///////////////////
                 const colorScale = d3.scaleThreshold()
                     .domain(props.areas.map(d => toPercentage(d.end)))
-                    .range(props.areas.map(d => colors[d.name]));
+                    .range(props.areas.map(d => d.color));
 
                 const interpretationScale = d3.scaleThreshold()
                     .domain(props.areas.map(d => toPercentage(d.end)))
@@ -334,14 +340,16 @@
             //     myTransform = bnl.detailZoom;
             //     // zoomed(bnl.detailZoom);
             // });
-            watch(() => props.data, update, { deep: true });
+            watch(() => props.time, draw);
+            watch(() => props.simTime, update);
+            watch(() => props.yDomain, draw, { deep: true });
 
             // Issue the load request once the component is ready.
             onMounted(draw);
 
             return {
                 chart,
-                                draw
+                draw
             };
         },
     })

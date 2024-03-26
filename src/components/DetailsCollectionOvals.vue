@@ -49,10 +49,8 @@
             // Get access to parts that we need in our properties and functions.
             const bnl = useApp();
 
-            const measures = reactive([]);
-            const selMeasures = computed(() => {
-                return measures.filter(d => bnl.selectedViews[d.id]);
-            })
+            const measures = reactive({ data: [] });
+            const selMeasures = computed(() => measures.data.filter(d => bnl.selectedViews[d.id]))
 
             const margins = {
                 top: 0,
@@ -62,12 +60,13 @@
             };
 
             // Initialise the UI once it is realised.
-            onMounted(async () => {
+            async function init() {
                 // get data regarding original distances
-                const dataset = await (await axios.get("data.json")).data
+                const dataset = (await axios.get(`data_${bnl.dataset}.json`)).data
 
+                const results = []
                 for (const [key, entry] of Object.entries(dataset)) {
-                    measures.push({
+                    results.push({
                         id: key,
                         data: entry,
                         x: d => new Date(d.date),
@@ -75,14 +74,18 @@
                         yc: d => d.post_val_a,
                     });
                 }
+                measures.data = results
                 orderUpdate(bnl.viewOrder);
-            });
-
-            function orderUpdate(order) {
-                measures.sort((a, b) => order.findIndex(d => d.id === a.id)-order.findIndex(d => d.id === b.id))
             }
 
+            function orderUpdate(order) {
+                measures.data.sort((a, b) => order.findIndex(d => d.id === a.id)-order.findIndex(d => d.id === b.id))
+            }
+
+            onMounted(init);
+
             watch(() => bnl.viewOrder, orderUpdate, { deep: true });
+            watch(() => bnl.dataset, init);
 
             return {
                 margins,

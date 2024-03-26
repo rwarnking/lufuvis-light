@@ -2,7 +2,7 @@
 <template>
     <div class="small-multiple">
         <svg if="initialized" :width="width" :height="height">
-            <AreaChart v-for="item in measures"
+            <AreaChart v-for="item in measures.data"
                 :data="item.data.values"
                 :key="item.id"
                 :id="item.id"
@@ -10,7 +10,7 @@
                 :y="item.y"
                 :yLabel="item.data.display_short"
                 :width="width"
-                :height="height / measures.length"
+                :height="height / measures.data.length"
             />
         </svg>
     </div>
@@ -22,7 +22,7 @@
     import axios from "axios";;
 
     import { useApp } from "@/store/app";
-    import { ref, onMounted, reactive } from "vue";
+    import { ref, onMounted, reactive, watch } from "vue";
 
 
     const props = defineProps({
@@ -39,32 +39,36 @@
     const initialized = ref(false);
     const bnl = useApp();
 
-    const measures = reactive([]);
+    const measures = reactive({ data: [] });
 
     // Initialise the UI once it is realised.
-    onMounted(async () => {
+    async function init() {
         // get data regarding original distances
-        const dataset = await (await axios.get("data.json")).data
-
-        measures.value = []
+        const dataset = (await axios.get(`data_${bnl.dataset}.json`)).data
 
         let i = 0;
-        const order = [];
+        const order = [], results = [];
         for (const [key, entry] of Object.entries(dataset)) {
-            measures.push({
+            results.push({
                 id: key,
                 index: i++,
                 data: entry,
                 x: d => new Date(d.date),
                 y: d => d.best_val_n,
             });
-            order.push({ id: key, position: i*props.height })
-
+            order.push({ id: key, position: i*props.height, index: entry.index })
+            
             bnl.selectView(key);
         }
+        measures.data = results
+        order.sort((a, b) => a.index - b.index)
         bnl.setViewOrder(order);
         initialized.value = true;
-    });
+    }
+
+    onMounted(init);
+
+    watch(() => bnl.dataset, init);
 </script>
 
 
